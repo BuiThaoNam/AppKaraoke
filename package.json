@@ -1,0 +1,16 @@
+{
+  "name": "going-back-v3",
+  "version": "0.0.0",
+  "description": "No description",
+  "author": null,
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "dependencies": {
+    "expo": "^31.0.0",
+    "react": "16.5.0",
+    "react-native": "0.57.8",
+    "prop-types": "15.6.2",
+    "react-native-measureme": "0.0.1",
+    "react-navigation": "3.0.0-rc.5"
+  }
+}
