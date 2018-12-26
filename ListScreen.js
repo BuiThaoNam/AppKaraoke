@@ -7,7 +7,7 @@ import {
   StyleSheet, 
   TextInput,
   FlatList, 
-  ListView, 
+ 
   Image, 
   Text, 
   View, 
@@ -80,7 +80,10 @@ export default class ListScreen extends React.Component {
       dataSource: [],
     }
     Expo.ScreenOrientation.allowAsync(Expo.ScreenOrientation.Orientation.PORTRAIT);
-    AsyncStorage.getItem('Marked').then((item) => {this.setState({marked: JSON.parse(item)});});
+    AsyncStorage.getItem('Marked').then((item) => {
+      if(item != null)
+        this.setState({marked: JSON.parse(item)});
+      });
     this.getData(this.state.query);
 
   }
@@ -94,20 +97,19 @@ export default class ListScreen extends React.Component {
       marked[track.track.track_id] = track;
     this.setState({marked: marked});
     AsyncStorage.setItem('Marked', JSON.stringify(marked)).then(() => {});
-    console.log(marked);
   }
 
   check_if_favorited(id)
   {
-    return (this.state.marked != null && this.state.marked.hasOwnProperty(id));
+    return (this.state.marked.hasOwnProperty(id));
   }
 
-  filter_favorite()
+  filter_favorite() //loc cac bai hat minh thich ra
   {
     if(this.state.marked != null)
-      this.setState({dataSource: Object.values(this.state.marked)})
+      this.setState({dataSource: Object.values(this.state.marked)}) //gan gai tri
     else
-      this.setState({dataSource: []})
+      this.setState({dataSource: []}) //null la khong co bai hat, can gi vong lap
   }
 
   show_list_data(item)
@@ -151,8 +153,8 @@ export default class ListScreen extends React.Component {
     return fetch(url)
       .then(response => response.json())
       .then(responseJson => {
-        this.setState({dataSource: responseJson.message.body.track_list,});
-        console.log(responseJson.message.body.track_list);
+        this.setState({dataSource: responseJson.message.body.track_list,}); 
+       // alert(responseJson.message.body.track_list); 
         });
   } 
 
@@ -166,7 +168,7 @@ export default class ListScreen extends React.Component {
           <TouchableWithoutFeedback onPress={() => this.filter_favorite()}>
             <View style={styles.favorite_filter}>
               <Image style={styles.favorite_image} source={require('./img/favorited.png')} resizeMode={ImageResizeMode.contain}/>
-            </View>
+            </View> 
           </TouchableWithoutFeedback>
         </View>
           <FlatList
@@ -174,8 +176,8 @@ export default class ListScreen extends React.Component {
           data = {this.state.dataSource}
           renderItem={({ item }) => this.show_list_data(item)}
           ItemSeparatorComponent = {() => (<View style={{height: 1, backgroundColor: 'gray'}}/>)}
-          ListHeaderComponent = {() => (<View style={{height: 1, backgroundColor: '#ffaa3c',}}/>)}
           ListEmptyComponent = {this.show_list_empty()}
+          
         />
       </View>
     );
