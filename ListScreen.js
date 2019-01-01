@@ -6,8 +6,7 @@ import {
   AsyncStorage,
   StyleSheet, 
   TextInput,
-  FlatList, 
- 
+  FlatList,
   Image, 
   Text, 
   View, 
@@ -21,7 +20,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     height: 80, 
-    width: 80,  
+    width: 80,
   },
   like_images: {
     width: '100%',
@@ -68,6 +67,7 @@ export default class ListScreen extends React.Component {
       textAlign: 'center',
       paddingBottom: 5,
     },
+    headerLeft: null,
   }
 
   constructor(props) 
@@ -79,7 +79,6 @@ export default class ListScreen extends React.Component {
       marked: new Object(),
       dataSource: [],
     }
-    Expo.ScreenOrientation.allowAsync(Expo.ScreenOrientation.Orientation.PORTRAIT);
     AsyncStorage.getItem('Marked').then((item) => {
       if(item != null)
         this.setState({marked: JSON.parse(item)});
@@ -97,19 +96,20 @@ export default class ListScreen extends React.Component {
       marked[track.track.track_id] = track;
     this.setState({marked: marked});
     AsyncStorage.setItem('Marked', JSON.stringify(marked)).then(() => {});
+    
   }
 
   check_if_favorited(id)
   {
-    return (this.state.marked.hasOwnProperty(id));
+    return (this.state.marked != null && this.state.marked.hasOwnProperty(id));
   }
 
-  filter_favorite() //loc cac bai hat minh thich ra
+  filter_favorite()
   {
     if(this.state.marked != null)
-      this.setState({dataSource: Object.values(this.state.marked)}) //gan gai tri
+      this.setState({dataSource: Object.values(this.state.marked)})
     else
-      this.setState({dataSource: []}) //null la khong co bai hat, can gi vong lap
+      this.setState({dataSource: []})
   }
 
   show_list_data(item)
@@ -119,13 +119,13 @@ export default class ListScreen extends React.Component {
     
     return (
       <View>
-        <View style = {{flexDirection: 'row', height: 90, paddingVertical: 5}}>
+        <View style = {{flexDirection: 'row', height: 90, paddingVertical: 5, }}>
           <TouchableOpacity onPress={() => this.mark_as_favorited(item)}>
-              <View style = {styles.like_buttons}>
-                <Image style={styles.like_images} source={this.check_if_favorited(item.track.track_id) ? require('./img/favorited.png') : require('./img/not-favorited.png')} resizeMode={ImageResizeMode.contain}/>
-              </View>
+            <View style = {styles.like_buttons}>
+              <Image style={styles.like_images} source={this.check_if_favorited(item.track.track_id) ? require('./img/favorited.png') : require('./img/not-favorited.png')} resizeMode={ImageResizeMode.contain}/>
+            </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigate('Lyric', {track: item.track})}>
+          <TouchableOpacity style={{flex: 1}} onPress={() => navigate('Lyric', {track: item.track})}>
             <View style = {{flex:1, padding: 10, justifyContent: 'center'}}>
               <Text style = {{fontSize: 20, textAlign: 'left'}} numberOfLines={2}>{item.track.track_name}</Text>
               <Text style = {{fontSize: 15, textAlign: 'left', color: 'gray'}} numberOfLines={1}>{item.track.artist_name}</Text>
@@ -153,8 +153,7 @@ export default class ListScreen extends React.Component {
     return fetch(url)
       .then(response => response.json())
       .then(responseJson => {
-        this.setState({dataSource: responseJson.message.body.track_list,}); 
-       // alert(responseJson.message.body.track_list); 
+        this.setState({dataSource: responseJson.message.body.track_list,});
         });
   } 
 
@@ -168,7 +167,7 @@ export default class ListScreen extends React.Component {
           <TouchableWithoutFeedback onPress={() => this.filter_favorite()}>
             <View style={styles.favorite_filter}>
               <Image style={styles.favorite_image} source={require('./img/favorited.png')} resizeMode={ImageResizeMode.contain}/>
-            </View> 
+            </View>
           </TouchableWithoutFeedback>
         </View>
           <FlatList
@@ -176,8 +175,9 @@ export default class ListScreen extends React.Component {
           data = {this.state.dataSource}
           renderItem={({ item }) => this.show_list_data(item)}
           ItemSeparatorComponent = {() => (<View style={{height: 1, backgroundColor: 'gray'}}/>)}
+          ListHeaderComponent = {() => (<View style={{height: 1, backgroundColor: '#ffaa3c',}}/>)}
           ListEmptyComponent = {this.show_list_empty()}
-          
+          contentContainerStyle={{ flexGrow: 1 }}
         />
       </View>
     );

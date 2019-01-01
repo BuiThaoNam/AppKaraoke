@@ -1,5 +1,11 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView, StyleSheet, ImageBackground, Text, View } from 'react-native';
+import {
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
+  } from 'react-native';
 import Dash from './Dash.js'
 
 const styles = StyleSheet.create({
@@ -55,9 +61,19 @@ export default class LyricScreen extends React.Component {
     this.state = {
       track: '',
       lyrics: '',
+      count: -1,
       };
+    setInterval(() => { this.on_interval() }, 125);
   }
   
+  on_interval()
+  {
+    let count = this.state.count;
+    if (count >= 0 && count < this.state.lyrics.length)
+      count++;
+    this.setState({ count });
+  }
+
   getData(track)
   {
     let url = 'http://api.musixmatch.com/ws/1.1/track.lyrics.get?apikey=445d6196c08dc2b7490929f18149d684&track_id=' + track.track_id;
@@ -66,11 +82,9 @@ export default class LyricScreen extends React.Component {
       .then(response => response.json())
       .then(responseJson => {
         var lyrics = responseJson.message.body.lyrics.lyrics_body;
-        console.log(lyrics);
         lyrics = lyrics.substring(0, lyrics.indexOf("*******"))
         this.setState({ lyrics });
-        //console.log(responseJson.message.body.track_list);
-        //resizeMode="cover"
+        this.setState({ count: 0 });
         });
   }
   
@@ -97,9 +111,12 @@ export default class LyricScreen extends React.Component {
           </View>
           {this.show_dash()}
         </View>
-        <View style={{flexDirection: 'row', flex: 1, justifyContent: 'center', alignItem: 'center'}}>
+        <View style={{flexDirection: 'row', flex: 1, justifyContent: 'center', alignItem: 'center', }}>
           <ScrollView style={{backgroundColor: '#3339', padding: 20, borderTopWidth: 1, borderColor: 'crimson'}}>
-            <Text style={styles.text_lyrics}>{this.state.lyrics}</Text>
+            <Text style={styles.text_lyrics}>
+              <Text style={{color: 'coral'}}>{this.state.lyrics.substring(0, this.state.count)}</Text>
+              {this.state.lyrics.substring(this.state.count, this.state.lyrics.length)}
+            </Text>
           </ScrollView>
         </View>
       </ImageBackground>
